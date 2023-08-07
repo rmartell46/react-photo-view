@@ -18,6 +18,8 @@ export interface IPhotoProps extends React.HTMLAttributes<HTMLElement> {
   onPhotoLoad: (params: IPhotoLoadedParams) => void;
   loadingElement?: JSX.Element;
   brokenElement?: JSX.Element | ((photoProps: BrokenElementParams) => JSX.Element);
+  type?: 'video' | 'image';
+  showVideoControls?: boolean;
 }
 
 export default function Photo({
@@ -28,6 +30,8 @@ export default function Photo({
   onPhotoLoad,
   loadingElement,
   brokenElement,
+  type,
+  showVideoControls,
   ...restProps
 }: IPhotoProps) {
   const mountedRef = useMountedRef();
@@ -54,6 +58,17 @@ export default function Photo({
   if (src && !broken) {
     return (
       <>
+      {(type && type === 'video') ? 
+        <video
+          className={`PhotoView__Photo${className ? ` ${className}` : ''}`} 
+          src={src}
+          onLoad={handleImageLoaded}
+          onError={handleImageBroken}
+          controls={showVideoControls}
+          alt=""
+          {...restProps}
+        />
+      :
         <img
           className={`PhotoView__Photo${className ? ` ${className}` : ''}`}
           src={src}
@@ -62,6 +77,7 @@ export default function Photo({
           alt=""
           {...restProps}
         />
+      }
         {!loaded &&
           (<span className="PhotoView__icon">{loadingElement}</span> || <Spinner className="PhotoView__icon" />)}
       </>
